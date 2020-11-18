@@ -3,6 +3,9 @@ import json
 from bson.json_util import dumps 
 import multiprocessing as mp 
 from multiprocessing import Pool 
+import types
+import json
+from datetime import datetime
 
 class Stream:
     """
@@ -10,7 +13,7 @@ class Stream:
     When receiving a log, the stream executes a custom process on the log. 
     """
 
-    def __init__(self, uri, database_name, collection_name):
+    def __init__(self, uri , database_name , collection_name , custom_method):
         """
         Init the stream configuration 
         """
@@ -19,6 +22,7 @@ class Stream:
         self.collection = self.database[collection_name]
         self.database_name = database_name
         self.collection_name = collection_name
+        self.custom_method = custom_method
 
     def stream(self): 
         """
@@ -26,7 +30,7 @@ class Stream:
         """
         self.change_stream = self.collection.watch()
         for self.change_stream_document in self.change_stream : 
-            self.documentKey = self.change_stream_document["documentKey"]["_id"]
+            self.documentKey = str( self.change_stream_document["documentKey"]["_id"])
             self.operationType  = self.change_stream_document["operationType"]
             self.cs_db = self.change_stream_document["ns"]["db"]
             self.cs_coll = self.change_stream_document["ns"]["coll"]
@@ -37,11 +41,33 @@ class Stream:
         """
         Process the output of the stream
         """
-        print(self.documentKey)
-        print(self.operationType)
-        print(self.cs_db)
-        print(self.cs_coll)
-        print('')
+        oplog = {
+                "documentKey":self.documentKey,
+                "operationType":self.operationType,
+                "database":self.cs_db,
+                "collection":self.cs_coll
+                }
+
+        if (self.custom_method == None):
+            self.log("info", json.dumps(oplog, indent=2))
+            print('')
+        else :
+            if isinstance(self.custom_method, types.FunctionType):
+                self.custom_method(**oplog)
+
+    def log(self, level, message):
+
+        """
+        Method to generate & display logs
+        """
+
+        level = level.upper()
+        now = datetime.now()
+        log_date = now.strftime("%d/%m/%Y %H:%M:%S")
+
+        log = "{} : {} : {}".format(log_date, level, message)
+        print(log)
+
 
 class Worker:
     """
@@ -59,7 +85,10 @@ class Worker:
         """
         pool_worker is the task called in each thread 
         """
-        self.input_stream = Stream(config[0], config[1], config[2])
+        if ( len(config)== 4): 
+            self.input_stream = Stream(config[0], config[1], config[2], config[3])
+        else : 
+            self.input_stream = Stream(config[0], config[1], config[2], None)
         print("Worker.pool_worker : start stream on collection :", self.input_stream.collection_name)
         self.input_stream.stream()
 

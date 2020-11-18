@@ -1,6 +1,11 @@
 # pymongobox 
 Set of tools allowing the operation of a mongodb database
 
+<p align="center">
+  <img src="logo.png">
+</p>
+
+
 * [Requirements](#requirements)
 * [crud](#crud)
 		* [Usage](#usage)
@@ -56,6 +61,9 @@ from pymongobox.streaming import services
 ```
 
 #### Usage 
+##### Default streaming 
+By Default, the stream prints new logs in console. 
+
 - Set configuration for multiple mongoDB collections :
 ```python 
 stream_config1 = ["mongodb://localhost:27017","database_name","collection_name1"]
@@ -72,5 +80,20 @@ worker = services.Worker(2, stream_config)
 ```python 
 worker.pool_handler()
 ```
+##### Custom logs processing
+Provides a way to run a custom function on each new stream log of collection
+```python
+from pymongobox.streaming import services
 
+def custom_process(**kwargs): 
+    for k,v in kwargs.items(): 
+        print(k, v)
 
+if __name__=="__main__":
+    stream_config1 = ["mongodb://localhost:27017","database_name","collection_name1", custom_process]
+    stream_config2 = ["mongodb://localhost:27017","database_name","collection_name2", custom_process]
+    stream_config=(stream_config1,stream_config2)
+    worker = services.Worker(2, stream_config)
+
+    worker.pool_handler()
+```
