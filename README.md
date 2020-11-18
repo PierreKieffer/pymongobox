@@ -9,14 +9,14 @@ Set of tools allowing the operation of a mongodb database
 
 
 
+
+
 * [Requirements](#requirements)
 * [Package install](#package-install)
 * [crud](#crud)
-		* [Usage](#usage)
 * [streaming](#streaming)
-		* [Usage](#usage-1)
-			* [Default streaming](#default-streaming)
-			* [Custom logs processing](#custom-logs-processing)
+	* [Default streaming](#default-streaming)
+	* [Custom logs processing](#custom-logs-processing)
 
 
 ## Requirements 
@@ -32,8 +32,6 @@ CRUD operations create, read, update, and delete documents.
 ```bash
 from pymongobox.crud import crud
 ```
-
-#### Usage 
 - Set configuration for a collection 
 ```python
 my_collection = crud.MongoDB("mongodb://localhost:27017", "database_name", "collection_name")
@@ -66,8 +64,7 @@ The service allows to launch asynchronous streams in parallel.
 from pymongobox.streaming import services
 ```
 
-#### Usage 
-##### Default streaming 
+### Default streaming 
 By Default, the stream prints new logs in console. 
 
 - Set configuration for multiple mongoDB collections :
@@ -86,7 +83,7 @@ worker = services.Worker(2, stream_config)
 ```python 
 worker.pool_handler()
 ```
-##### Custom logs processing
+### Custom logs processing
 Provides a way to run a custom function on each new stream log of collection
 ```python
 from pymongobox.streaming import services
