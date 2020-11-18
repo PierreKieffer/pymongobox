@@ -1,16 +1,22 @@
 # pymongobox 
-Set of tools allowing the operation of a mongodb database
 
 <p align="center">
   <img src="logo.png">
 </p>
 
 
+Set of tools allowing the operation of a mongodb database
+
+
+
 * [Requirements](#requirements)
+* [Package install](#package-install)
 * [crud](#crud)
 		* [Usage](#usage)
 * [streaming](#streaming)
 		* [Usage](#usage-1)
+			* [Default streaming](#default-streaming)
+			* [Custom logs processing](#custom-logs-processing)
 
 
 ## Requirements 
